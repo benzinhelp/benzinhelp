@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Benzina a Floridia</title>
+
+    <style>
+        *{
+            margin: 0;
+            color: #242423;
+        }
+        body{
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            align-items: center;
+            justify-content: center;
+            background-color: #E8EDDF;
+            gap:3vw;
+            
+        }
+        nav{
+            background-color: #ffffff;
+            width: 100vw;
+            height: 7vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        nav h1{
+            font-size: 10vw;
+        }
+        .content{
+        
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            height: auto;
+            width: 100vw;
+            gap: 3vw;
+        }
+        .benzinaio{
+            
+            
+            display: flex;
+            flex-direction: column;
+            width: 80vw;
+            border-radius: 30px;
+            height: auto;
+            flex-wrap: wrap;
+            background-color: #333533;
+        }
+        .benzinaio h1{
+            font-size: 5vw;
+            margin: 2vw;
+            color: #cfdbd5;
+        }
+        .benzinaio h2{
+            font-size: 3vw;
+            margin: 2vw;
+            color: #cfdbd5;
+        }
+        .benzinaio .prezzo{
+            font-size: 5vw;
+            align-self:flex-end;
+            margin: 2vw;
+            color: #f5cb5c;
+        }
+        .benzinaio .data{
+            font-size: 4vw;
+            align-self:flex-end;
+            margin: 3vw;
+            color: #6b6e6b;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>Benzina finder</h1>
+    </nav>
+    <div class='content'>
+        <div class='benzinaio'>
+            <h1 class='name'>Benzinaio</h1>
+            <h2 class='address'>Viale Cipo</h2>
+            <h3 class='prezzo'>104 euro</h3>
+            <h3 class="data">Inserto il:</h3>
+        </div>
+        <div class='benzinaio'>
+            <h1 class='name'>Benzinaio</h1>
+            <h2 class='address'>Viale Cipo</h2>
+            <h3 class='prezzo'>104 euro</h3>
+            <h3 class="data">Inserito il:</h3>
+        </div>
+        <div class='benzinaio'>
+            <h1 class='name'>Benzinaio</h1>
+            <h2 class='address'>Viale Cipo</h2>
+            <h3 class='prezzo'>104 euro</h3>
+            <h3 class="data">Inserito il:</h3>
+        </div>
+        <div class='benzinaio'>
+            <h1 class='name'>Benzinaio</h1>
+            <h2 class='address'>Viale Cipo</h2>
+            <h3 class='prezzo'>104 euro</h3>
+            <h3 class="data">Inserito il:</h3>
+        </div>
+    </div>
+
+    <script>
+
+        
+        // https://api.codetabs.com/v1/proxy/?quest=
+        let benzinai = ["https://carburanti.mise.gov.it/ospzApi/registry/servicearea/40339","https://carburanti.mise.gov.it/ospzApi/registry/servicearea/15279","https://carburanti.mise.gov.it/ospzApi/registry/servicearea/6193","https://carburanti.mise.gov.it/ospzApi/registry/servicearea/55257"];
+        
+
+        async function getData(url){
+            try{
+                const response = await fetch("https://api.codetabs.com/v1/proxy/?quest="+url);
+                if(!response.ok){
+                    throw new Error("Could not fetch data");
+                }
+                const data = await response.json();
+                let nome, via, prezzo,DataInv;
+                nome = data.nomeImpianto;
+                via = data.address;
+                for(let o =0;o<data.fuels.length;o++){
+                    if(data.fuels[o].fuelId == 1 && data.fuels[o].isSelf == true){
+                        prezzo=data.fuels[o].price;
+                        DataInv = data.fuels[o].insertDate;
+                        break;
+                    }
+                }
+                
+                return [nome, via, prezzo,DataInv];
+            }
+            catch(error){
+                console.error(error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let nomiBenz = document.querySelectorAll(".name")
+            let via = document.querySelectorAll(".address")
+            let prezzo = document.querySelectorAll(".prezzo")
+            let data_ins =document.querySelectorAll(".data")
+            for (let i = 0; i < benzinai.length; i++) {
+                getData(benzinai[i]).then(
+                function(data){
+                    nomiBenz[i].textContent=data[0];
+                    via[i].textContent=data[1];
+                    prezzo[i].textContent=data[2].toString()+" €/L";
+                    data_ins[i].textContent="Prezzo aggiornato il: "+data[3];
+            })
+                
+                
+            }
+        })   
+        
+    </script>
+</body>
+</html>
